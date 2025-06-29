@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor Latihan Interaktif - Dio Hendra</title>
+    <!-- Chosen Palette: Earthy Calm -->
+    <!-- Application Structure Plan: The application is designed as a personal athletic dashboard with four main sections accessible via tabs: Profil, Tujuan & Target, Program Latihan, and Jadwal Mingguan. This tabbed structure allows for easy navigation on a single page, preventing users from being overwhelmed. The flow is logical: starting with who the athlete is (Profil), what he wants to achieve (Tujuan), how he will do it (Program), and the daily execution (Jadwal). This is more user-friendly than a linear report as it allows users to jump directly to the information they need. Key interactions include interactive charts for visualizing goals and a toggleable weekly schedule to simplify complex information. -->
+    <!-- Visualization & Content Choices: 
+        - Profil Atlet: Goal(Inform) -> Key stats presented in cards with icons. Method(HTML/CSS). Justification(Quick, scannable overview of the athlete's base data).
+        - Tujuan Lari (12 menit & 5K): Goal(Compare/Inform) -> Horizontal bar charts showing target times. Method(Chart.js/Canvas). Interaction(Tooltips on hover). Justification(Visually represents the target goals, making them more tangible than just text).
+        - Periodisasi Latihan: Goal(Change/Organize) -> A CSS-based visual timeline for Jul-Dec. Method(HTML/CSS/Tailwind). Interaction(Subtle hover effects). Justification(Clearly shows the progression of the training plan over time).
+        - Jadwal Mingguan: Goal(Organize/Inform) -> Interactive buttons to toggle between weekday and weekend schedules. Method(HTML/JS). Justification(Simplifies the presentation of the daily routine, making it easier to digest).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #F4F1DE;
+            --bg-card: #FFFFFF;
+            --text-dark: #3D405B;
+            --primary: #81B29A;
+            --accent: #E07A5F;
+            --border: #D8D4C2;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+        }
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+        }
+        .nav-link:hover {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 300px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-poppins font-bold" style="color: var(--text-dark);">Dasbor Atlet</h1>
+            <p class="text-xl md:text-2xl font-poppins" style="color: var(--primary);">Dio Hendra</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <ul class="flex items-center justify-center border-b-2" style="border-color: var(--border);">
+                <li><button class="nav-link active text-sm sm:text-base font-semibold py-3 px-3 sm:px-6" data-tab="profil">Profil Atlet</button></li>
+                <li><button class="nav-link text-sm sm:text-base font-semibold py-3 px-3 sm:px-6" data-tab="tujuan">Tujuan & Target</button></li>
+                <li><button class="nav-link text-sm sm:text-base font-semibold py-3 px-3 sm:px-6" data-tab="program">Program Latihan</button></li>
+                <li><button class="nav-link text-sm sm:text-base font-semibold py-3 px-3 sm:px-6" data-tab="jadwal">Jadwal Mingguan</button></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Section: Profil Atlet -->
+            <section id="profil" class="content-section active">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-poppins font-bold mb-2">Profil Atlet</h2>
+                    <p class="text-md max-w-2xl mx-auto" style="color: var(--text-dark);">Ringkasan data pribadi dan riwayat kesehatan Dio. Informasi ini menjadi dasar dalam penyusunan program latihan yang personal dan aman.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4" style="border-color: var(--primary);">
+                        <h3 class="font-bold text-lg mb-2">Data Diri</h3>
+                        <p><strong>Tanggal Lahir:</strong> 17 Des 2006</p>
+                        <p><strong>Tinggi Badan:</strong> 165 cm</p>
+                        <p><strong>Berat Badan:</strong> 55 kg</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4" style="border-color: var(--primary);">
+                        <h3 class="font-bold text-lg mb-2">Gaya Hidup</h3>
+                        <p><strong>Pola Makan:</strong> Normal, 2x sehari</p>
+                        <p><strong>Durasi Latihan:</strong> 6-7 jam</p>
+                        <p><strong>Tingkat Aktivitas:</strong> Kurang Aktif / Aktif</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4" style="border-color: var(--accent);">
+                        <h3 class="font-bold text-lg mb-2 text-red-700">Catatan Medis Penting</h3>
+                        <p><strong>Cedera Terakhir:</strong> Bulan lalu</p>
+                        <p><strong>Area Cedera:</strong> Pergelangan Tangan</p>
+                        <p class="text-sm mt-2">Perlu perhatian khusus pada latihan kekuatan untuk mencegah cedera berulang.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Tujuan & Target -->
+            <section id="tujuan" class="content-section">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-poppins font-bold mb-2">Tujuan & Target</h2>
+                    <p class="text-md max-w-2xl mx-auto" style="color: var(--text-dark);">Tujuan utama Dio yang ingin dicapai melalui program latihan ini. Target yang jelas dan terukur menjadi motivasi dan tolok ukur keberhasilan.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4 text-center">Target Lari 12 Menit</h3>
+                        <p class="text-center text-sm mb-4">Mencapai jarak sejauh mungkin dalam 12 menit untuk tes seleksi.</p>
+                        <div class="chart-container">
+                            <canvas id="run12minChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-xl mb-4 text-center">Target 5K Sub 24 Menit</h3>
+                         <p class="text-center text-sm mb-4">Menyelesaikan lari 5 kilometer dengan waktu di bawah 24 menit.</p>
+                        <div class="chart-container">
+                            <canvas id="run5kChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
+                    <h3 class="font-bold text-xl mb-2 text-center">Penguasaan Teknik Latihan</h3>
+                    <p class="text-center">Tujuan krusial lainnya adalah mendapatkan bimbingan untuk melakukan gerakan <strong>strength training</strong> dengan benar. Ini penting untuk memaksimalkan hasil, meningkatkan kekuatan, dan yang terpenting, menghindari kesalahan gerakan yang dapat menyebabkan cedera.</p>
+                </div>
+            </section>
+
+            <!-- Section: Program Latihan -->
+            <section id="program" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-poppins font-bold mb-2">Rancangan Program Latihan</h2>
+                    <p class="text-md max-w-2xl mx-auto" style="color: var(--text-dark);">Strategi yang direkomendasikan Coach Idul untuk mencapai target. Program ini dirancang progresif dan adaptif sesuai kapasitas Dio.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                    <h3 class="font-bold text-xl mb-4">Parameter Utama</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold" style="color: var(--accent);">4-6x</p>
+                            <p class="text-sm">Sesi/Minggu</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" style="color: var(--accent);">Spesifik</p>
+                            <p class="text-sm">Fokus pada Tes Fisik</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold" style="color: var(--accent);">Adaptif</p>
+                            <p class="text-sm">Sesuai Kapasitas Dio</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-6 text-center">Periodisasi Latihan (Juli - Desember)</h3>
+                    <p class="text-center text-sm -mt-4 mb-6">Intensitas latihan akan ditingkatkan secara bertahap dari rendah ke tinggi untuk membangun kebugaran secara aman dan berkelanjutan.</p>
+                    <div class="flex justify-between items-center w-full">
+                        <div class="text-center w-1/6">
+                            <div class="bg-green-200 text-green-800 rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Jul</div>
+                        </div>
+                        <div class="flex-1 h-1 rounded-full bg-gray-300"></div>
+                        <div class="text-center w-1/6">
+                            <div class="bg-green-300 text-green-800 rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Ags</div>
+                        </div>
+                        <div class="flex-1 h-1 rounded-full bg-gray-300"></div>
+                        <div class="text-center w-1/6">
+                            <div class="bg-yellow-300 text-yellow-800 rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Sep</div>
+                        </div>
+                         <div class="flex-1 h-1 rounded-full bg-gray-300"></div>
+                        <div class="text-center w-1/6">
+                            <div class="bg-orange-400 text-orange-800 rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Okt</div>
+                        </div>
+                        <div class="flex-1 h-1 rounded-full bg-gray-300"></div>
+                        <div class="text-center w-1/6">
+                            <div class="bg-red-400 text-red-800 rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Nov</div>
+                        </div>
+                         <div class="flex-1 h-1 rounded-full bg-gray-300"></div>
+                         <div class="text-center w-1/6">
+                            <div class="bg-red-500 text-white rounded-full h-12 w-12 flex items-center justify-center mx-auto font-bold transition-transform hover:scale-110">Des</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-center mt-2 flex justify-between">
+                        <span>Intensitas Rendah</span>
+                        <span>Intensitas Tinggi</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Jadwal Mingguan -->
+            <section id="jadwal" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-poppins font-bold mb-2">Contoh Jadwal Mingguan</h2>
+                    <p class="text-md max-w-2xl mx-auto" style="color: var(--text-dark);">Gambaran aktivitas harian Dio. Klik tombol di bawah untuk melihat perbedaan rutinitas antara hari kerja dan akhir pekan.</p>
+                </div>
+                <div class="text-center mb-6">
+                    <button id="btn-weekday" class="py-2 px-4 rounded-lg font-semibold shadow-md text-white" style="background-color: var(--primary);">Hari Kerja (Senin-Jumat)</button>
+                    <button id="btn-weekend" class="py-2 px-4 rounded-lg font-semibold shadow-md bg-gray-200">Akhir Pekan</button>
+                </div>
+                <div id="schedule-weekday" class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-4 text-center">Rutinitas Hari Kerja</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center"><span class="text-lg mr-3" style="color:var(--accent);">☀️</span> <strong>Pagi:</strong> Membantu Orang Tua</li>
+                        <li class="flex items-center"><span class="text-lg mr-3" style="color:var(--accent);">🕛</span> <strong>Siang:</strong> Istirahat</li>
+                        <li class="flex items-center"><span class="text-lg mr-3" style="color:var(--accent);">🏃‍♂️</span> <strong>Sore:</strong> Latihan Lari (persiapan casis)</li>
+                    </ul>
+                </div>
+                <div id="schedule-weekend" class="bg-white p-6 rounded-xl shadow-lg hidden">
+                    <h3 class="font-bold text-xl mb-4 text-center">Rutinitas Akhir Pekan</h3>
+                     <ul class="space-y-3">
+                        <li class="flex items-center"><span class="text-lg mr-3" style="color:var(--accent);">🏃‍♂️</span> <strong>Sore:</strong> Latihan lari setiap sore</li>
+                        <li class="flex items-center"><span class="text-lg mr-3" style="color:var(--accent);">🧘</span> <strong>Lainnya:</strong> Waktu untuk istirahat aktif dan pemulihan</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 pt-6 border-t" style="border-color: var(--border);">
+            <p class="font-bold">Langkah Selanjutnya</p>
+            <p class="text-sm max-w-xl mx-auto">Coach Idul akan melakukan tes awal untuk menentukan target performa yang lebih spesifik. Hasil tes akan menjadi dasar penyesuaian program lebih lanjut.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    sections.forEach(section => {
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // Interactive Schedule
+            const btnWeekday = document.getElementById('btn-weekday');
+            const btnWeekend = document.getElementById('btn-weekend');
+            const scheduleWeekday = document.getElementById('schedule-weekday');
+            const scheduleWeekend = document.getElementById('schedule-weekend');
+
+            btnWeekday.addEventListener('click', () => {
+                scheduleWeekday.classList.remove('hidden');
+                scheduleWeekend.classList.add('hidden');
+                btnWeekday.style.backgroundColor = 'var(--primary)';
+                btnWeekday.classList.add('text-white');
+                btnWeekend.style.backgroundColor = '#E5E7EB';
+                btnWeekend.classList.remove('text-white');
+            });
+
+            btnWeekend.addEventListener('click', () => {
+                scheduleWeekend.classList.remove('hidden');
+                scheduleWeekday.classList.add('hidden');
+                btnWeekend.style.backgroundColor = 'var(--primary)';
+                btnWeekend.classList.add('text-white');
+                btnWeekday.style.backgroundColor = '#E5E7EB';
+                btnWeekday.classList.remove('text-white');
+            });
+
+
+            // Chart.js Implementations
+            const chartOptions = {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                           callback: function(value) {
+                                const minutes = Math.floor(value / 60);
+                                const seconds = value % 60;
+                                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                           },
+                           font: { family: 'Inter' }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Waktu (Menit:Detik)',
+                            font: { family: 'Inter', weight: 'bold' }
+                        }
+                    },
+                    y: {
+                        ticks: { font: { family: 'Inter' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                const value = context.parsed.x;
+                                const minutes = Math.floor(value / 60);
+                                const seconds = value % 60;
+                                label += `${minutes} menit ${seconds} detik`;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // Chart 1: 5K Run
+            const run5kCtx = document.getElementById('run5kChart').getContext('2d');
+            new Chart(run5kCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Target 5K'],
+                    datasets: [{
+                        label: 'Waktu Target',
+                        data: [24 * 60],
+                        backgroundColor: ['rgba(129, 178, 154, 0.7)'],
+                        borderColor: ['#81B29A'],
+                        borderWidth: 2,
+                        barThickness: 50,
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Chart 2: 12 min Run - Visualized as distance target
+            const run12minCtx = document.getElementById('run12minChart').getContext('2d');
+            new Chart(run12minCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jarak dalam 12 Menit'],
+                    datasets: [{
+                        label: 'Jarak Target',
+                        data: [2.8], // Target umum casis (misal 2800m), bisa disesuaikan
+                        backgroundColor: ['rgba(224, 122, 95, 0.7)'],
+                        borderColor: ['#E07A5F'],
+                        borderWidth: 2,
+                        barThickness: 50
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jarak (km)',
+                                font: { family: 'Inter', weight: 'bold' }
+                            },
+                             ticks: { font: { family: 'Inter' } }
+                        },
+                        y: { ticks: { font: { family: 'Inter' } } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `Target: ${context.parsed.x} km`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
